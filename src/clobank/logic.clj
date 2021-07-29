@@ -36,7 +36,8 @@
    :by-category (get-amount-of-transactions-customer-by-category customer)
    })
 
-(defn get-all-credit-cards [customer]
+(defn get-all-credit-cards
+  [customer]
   (->> customer
        :credit-cards
        first))

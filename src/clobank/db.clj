@@ -1,5 +1,5 @@
 (ns clobank.db)
-(require '[java-time :as java-time])
+(use 'java-time)
 
 (def customer1 {:guid         "3fe728fc-216b-402d-9927-d5c2ac0cefa7",
                 :name         "João Clojure",
