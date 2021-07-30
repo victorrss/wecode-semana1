@@ -6,3 +6,6 @@
 
 (println "\nTransações por categoria: ")
 (cb.logic/transactions-by-category)
+
+(println "\nTransações: ")
+(cb.logic/list-transactions)
