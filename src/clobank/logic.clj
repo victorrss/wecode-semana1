@@ -26,8 +26,7 @@
   (-> transaction
       (dissoc :guid)
       (update :date #(str (java-time/format "dd/MM/yyyy hh:mm" %)))
-      (update :amount #(str "R$ " %))
-      ))
+      (update :amount #(str "R$ " %))))
 
 (defn show-formatted-transactions
   [transaction]
@@ -50,15 +49,15 @@
    :by-category (get-amount-of-transactions-customer-by-category customer)
    })
 
-(defn get-all-credit-cards
-  [customer]
-  (->> customer
+(defn get-customers-credit-cards
+  [customers]
+  (->> customers
        :credit-cards
        first))
 
 (defn transactions-by-category []
   (->> (cb.db/clobank-database)
-       (map get-all-credit-cards)
+       (map get-customers-credit-cards)
        (group-total-by-category)
        println
        ))
@@ -67,12 +66,57 @@
   (->> (cb.db/clobank-database)
        (group-by :guid)
        (map group-transactions-by-customer)
-       println))
+       clojure.pprint/pprint))
 
-(defn list-transactions[]
+(defn list-transactions []
   (->> (cb.db/clobank-database)
-       (map get-all-credit-cards)
+       (map get-customers-credit-cards)
        (map :transactions)
        (reduce into [])
        (map format-transaction)
-       (map show-formatted-transactions)))
+       (mapv show-formatted-transactions)))
+
+(defn get-customer-credit-cards
+  [customer]
+  (->> customer
+       first
+       :credit-cards
+       first))
+
+(defn get-transactions-of-credit-card
+  [credit-card]
+  {
+   :credit-card  (:number credit-card)
+   :transactions (map format-transaction (:transactions credit-card))
+   }
+  )
+
+(defn group-credit-cards-by-customer
+  [[guid customer]]
+  {
+   :customer     guid,
+   :credit-cards (get-customer-credit-cards customer)
+   })
+
+(defn group-transactions-by-credit-cards [[guid-customer, credit-cards]]
+  {
+   :customer     guid-customer,
+   :credit-cards (get-transactions-of-credit-card credit-cards)
+   })
+
+;(defn filter-transaction-month [month, transaction]
+;  (->> transaction
+;       (filter (fn [tr] (= (java-time/month :date tr) month))))
+;       )
+;
+;
+;
+;(defn get-month-bill [month]
+;  (->> (cb.db/clobank-database)
+;       (group-by :guid)
+;       (map group-credit-cards-by-customer)
+;       (map group-transactions-by-credit-cards)
+;       println
+;       (map (filter-transaction-month month))
+;       println
+;       ))

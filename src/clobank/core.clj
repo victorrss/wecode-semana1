@@ -9,3 +9,6 @@
 
 (println "\nTransações: ")
 (cb.logic/list-transactions)
+
+;(println "\nFatura do mês 7: ")
+;(cb.logic/get-month-bill 7)
